@@ -1,8 +1,8 @@
-var mysql = require('mysql2');
+const mysql = require('mysql2');
 const Excel = require('exceljs');
 const ObjectsToCsv = require('objects-to-csv');
-var fs = require('fs');
-var moment = require('moment');
+const fs = require('fs');
+const moment = require('moment');
 
 const connection = mysql.createConnection({
   host: '127.0.0.1',
@@ -30,31 +30,26 @@ connection.query(
     const users = results;
 
     for (let i = 0; i < users.length; i++) {
-      // console.log('LOGDATA', users[i]);
-      //   console.log(`object`, users[i]?.LOGDATA.toString('hex'));
+      // console.log(`object`, users[i]?.LOGDATA.toString('hex'));
       let cell = users[i]?.LOGDATA.toString('hex').substr(18, 8);
 
-      fullArray.push({
-        id: i + 1,
-        name: users[i].NAME,
-        pos: users[i].POS,
-        tabId: users[i].TABID,
-        date: moment(users[i].LOGTIME).format('D-MM-YYYY hh:mm'),
-        temp: parseInt(cell, 16) / 10,
-      });
+      if (fullArray.filter(({ name }) => name === users[i].NAME).length === 0) {
+        fullArray.push({
+          id: fullArray.length + 1,
+          name: users[i].NAME,
+          pos: users[i].POS,
+          tabId: users[i].TABID,
+          date: moment(users[i].LOGTIME).format('D-MM-YYYY hh:mm'),
+          temp: parseInt(cell, 16) / 10,
+        });
+      }
     }
 
-    // recordToFile(fullArray);
     toExcel(fullArray);
 
     // console.log(`fullArray`, fullArray);
   }
 );
-
-const recordToFile = async (fullArray) => {
-  const csv = new ObjectsToCsv(fullArray, { bom: false });
-  await csv.toDisk('./list.csv');
-};
 
 const toExcel = (data) => {
   let workbook = new Excel.Workbook();
@@ -66,7 +61,6 @@ const toExcel = (data) => {
   ];
 
   // header
-
   const title = worksheet.getRow(2);
 
   title.values = [
@@ -81,15 +75,21 @@ const toExcel = (data) => {
   ];
 
   worksheet.columns = [
-    { key: 'id' },
+    { key: 'id', width: 5 },
     { key: 'date', width: 15 },
     { key: 'name', width: 25 },
     { key: 'pos', width: 15 },
     { key: 'tabId', width: 10 },
     { key: 'temp', width: 10 },
-    { key: 'podpis', width: 15 },
+    { key: 'podpis' },
     { key: 'fioPodpis', width: 15 },
   ];
+
+  worksheet.getRow(2).alignment = {
+    vertical: 'middle',
+    horizontal: 'center',
+    wrapText: true,
+  };
 
   // worksheet.columns.forEach((column) => {
   //   column.width = column.header.length < 12 ? 12 : column.header.length;
@@ -103,12 +103,6 @@ const toExcel = (data) => {
 
     worksheet.addRow({
       ...e,
-      amountRemaining: {
-        formula: `=C${rowIndex}-D${rowIndex}`,
-      },
-      percentRemaining: {
-        formula: `=E${rowIndex}/C${rowIndex}`,
-      },
     });
   });
 

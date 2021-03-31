@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "exceljs": "^4.2.1",
+    "latin-to-cyrillic": "^1.0.1",
     "moment": "^2.29.1",
     "mysql2": "^2.2.5",
     "objects-to-csv": "^1.3.6"
