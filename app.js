@@ -20,7 +20,7 @@ connection.connect(function (err) {
 });
 
 connection.query(
-  "select DISTINCT `tc-db-main`.`personal`.`ID`, `NAME`, `POS`, `TABID`, `tc-db-log`.`logs`.`LOGTIME`, `LOGDATA` from `tc-db-main`.`personal` inner join  `tc-db-log`.`logs` On (`tc-db-main`.`personal`.`ID` = `tc-db-log`.`logs`.`EMPHINT`) where `tc-db-log`.`logs`.`LOGTIME` >= '2021-03-02T00:00:00.000' AND `tc-db-log`.`logs`.`LOGTIME` <= '2021-03-02T23:59:59.000' AND LENGTH(`tc-db-log`.`logs`.`LOGDATA`) >= 21",
+  "select DISTINCT `tc-db-main`.`personal`.`ID`, `NAME`, `POS`, `TABID`, `tc-db-log`.`logs`.`LOGTIME`, `LOGDATA` from `tc-db-main`.`personal` inner join  `tc-db-log`.`logs` On (`tc-db-main`.`personal`.`ID` = `tc-db-log`.`logs`.`EMPHINT`) where `tc-db-log`.`logs`.`LOGTIME` >= '2021-03-02T00:00:00.000' AND `tc-db-log`.`logs`.`LOGTIME` <= '2021-03-02T23:59:59.000' AND LENGTH(`tc-db-log`.`logs`.`LOGDATA`) >= 21", // ORDER BY `NAME` ASC
   function (err, results) {
     if (err) {
       return console.log('Ошибка: ' + err.message);
@@ -39,7 +39,7 @@ connection.query(
           name: users[i].NAME,
           pos: users[i].POS,
           tabId: users[i].TABID,
-          date: moment(users[i].LOGTIME).format('D-MM-YYYY hh:mm'),
+          date: moment(users[i].LOGTIME).format('D.MM.YYYY'),
           temp: parseInt(cell, 16) / 10,
         });
       }
@@ -76,11 +76,11 @@ const toExcel = (data) => {
 
   worksheet.columns = [
     { key: 'id', width: 5 },
-    { key: 'date', width: 15 },
-    { key: 'name', width: 25 },
-    { key: 'pos', width: 15 },
-    { key: 'tabId', width: 10 },
-    { key: 'temp', width: 10 },
+    { key: 'date', width: 10 },
+    { key: 'name', width: 40 },
+    { key: 'pos', width: 23 },
+    { key: 'tabId', width: 13 },
+    { key: 'temp', width: 12 },
     { key: 'podpis' },
     { key: 'fioPodpis', width: 15 },
   ];
